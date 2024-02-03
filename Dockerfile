@@ -1,20 +1,19 @@
 FROM debian:12.4-slim
 
-WORKDIR /opt/android
-
 RUN apt update && \
 apt full-upgrade -y && \
 apt install -y openjdk-17-jdk curl tar zip unzip
 
-RUN curl 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip' -o commandlinetools.zip && \
-unzip commandlinetools.zip && \
-rm commandlinetools.zip
+RUN mkdir -p /opt/android && \
+curl 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip' -o /tmp/commandlinetools.zip && \
+unzip /tmp/commandlinetools.zip -d /opt/android && \
+rm /tmp/commandlinetools.zip
+
+RUN mv /opt/android/cmdline-tools /opt/android/latest && \
+mkdir /opt/android/cmdline-tools && \
+mv /opt/android/latest /opt/android/cmdline-tools/
 
 ENV ANDROID_SDK_ROOT=/opt/android
-
-RUN mv cmdline-tools latest && \
-mkdir cmdline-tools && \
-mv latest cmdline-tools/
 
 RUN yes | /opt/android/cmdline-tools/latest/bin/sdkmanager --install \
 'build-tools;34.0.0' \
@@ -22,12 +21,11 @@ RUN yes | /opt/android/cmdline-tools/latest/bin/sdkmanager --install \
 'emulator' \
 'platform-tools'
 
-WORKDIR /opt
+RUN curl --location --show-error --url 'https://services.gradle.org/distributions/gradle-8.6-bin.zip' -o /tmp/gradle.zip && \
+unzip /tmp/gradle.zip -d /opt && \
+rm /tmp/gradle.zip && \
+mv /opt/gradle-8.6 /opt/gradle
 
-RUN curl --location --show-error --url 'https://services.gradle.org/distributions/gradle-8.5-all.zip' -o gradle.zip && \
-unzip gradle.zip && \
-rm gradle.zip
-
-ENV PATH="${PATH}:/opt/android/platform-tools:/opt/android/cmdline-tools/latest/bin:/opt/android/emulator:/opt/gradle-8.5/bin"
+ENV GRADLE_HOME=/opt/gradle PATH="${PATH}:/opt/android/platform-tools:/opt/android/cmdline-tools/latest/bin:/opt/android/emulator:/opt/gradle/bin"
 
 WORKDIR /
