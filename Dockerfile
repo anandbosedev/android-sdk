@@ -2,7 +2,7 @@ FROM debian:12.4-slim
 
 RUN apt update && \
 apt full-upgrade -y && \
-apt install -y openjdk-17-jdk curl tar zip unzip
+apt install -y openjdk-17-jdk curl tar zip unzip zstd
 
 RUN mkdir -p /opt/android && \
 curl 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip' -o /tmp/commandlinetools.zip && \
@@ -27,5 +27,3 @@ rm /tmp/gradle.zip && \
 mv /opt/gradle-8.6 /opt/gradle
 
 ENV GRADLE_HOME=/opt/gradle PATH="${PATH}:/opt/android/platform-tools:/opt/android/cmdline-tools/latest/bin:/opt/android/emulator:/opt/gradle/bin"
-
-WORKDIR /
