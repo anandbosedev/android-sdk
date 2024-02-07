@@ -5,25 +5,48 @@ on:
     branches: [ main ]
   schedule:
     - cron: '0 0 * * 0'
+env:
+  CMDLINE_VERSION: 11076708
+  GRADLE_VERSION: 8.6
 
 jobs:
   build-base:
     runs-on: ubuntu-latest
     name: Build base container image
+    permissions: 
+      packages: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build base image
-        run: docker build -t anandbose16/android-sdk:base-11076708-8.6 -t anandbose16/android-sdk:base-latest -f ./android-sdk/base/11076708-8.6/Dockerfile ./android-sdk/base/11076708-8.6/
+        run: |
+          docker build \
+          -t anandbose16/android-sdk:base-${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }} \
+          -t anandbose16/android-sdk:base-latest \
+          -t ghcr.io/${{ github.actor }}/android-sdk:base-${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }} \
+          -t ghcr.io/${{ github.actor }}/android-sdk:base-latest \
+          -f ./android-sdk/base/${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }}/Dockerfile \
+          ./android-sdk/base/${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }}/
       - name: Push base image
-        run: docker push anandbose16/android-sdk --all-tags
+        run: |
+          docker push anandbose16/android-sdk --all-tags
+          docker push ghcr.io/${{ github.actor }}/android-sdk --all-tags
   build-images:
     runs-on: ubuntu-latest
     name: Build Android SDK images
     needs: [ build-base ]
+    permissions: 
+      packages: write
+      contents: read
     strategy:
       matrix:
         include:
@@ -60,10 +83,30 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build ${{ matrix.build-tools-version }}
-        run: docker build -t anandbose16/android-sdk:${{ matrix.build-tools-version }} -t anandbose16/android-sdk:${{ matrix.platform-version }} -f ./android-sdk/${{ matrix.build-tools-version }}/Dockerfile ./android-sdk/${{ matrix.build-tools-version }}/
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Android SDK image ${{ matrix.build-tools-version }}
+        run: |
+          docker build \
+          -t anandbose16/android-sdk:${{ matrix.build-tools-version }} \
+          -t anandbose16/android-sdk:${{ matrix.platform-version }} \
+          -t ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
+          -t ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.platform-version }} \
+          -f ./android-sdk/${{ matrix.build-tools-version }}/Dockerfile \
+          ./android-sdk/${{ matrix.build-tools-version }}/
       - name: Tag latest
         if: ${{ matrix.is-latest }}
-        run: docker tag anandbose16/android-sdk:${{ matrix.build-tools-version }} anandbose16/android-sdk:latest
+        run: |
+          docker tag \
+          anandbose16/android-sdk:${{ matrix.build-tools-version }} \
+          anandbose16/android-sdk:latest
+          docker tag \
+          ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
+          ghcr.io/${{ github.actor }}/android-sdk:latest
       - name: Push images
-        run: docker push anandbose16/android-sdk --all-tags
+        run: |
+          docker push anandbose16/android-sdk --all-tags
+          docker push ghcr.io/${{ github.actor }}/android-sdk --all-tags
