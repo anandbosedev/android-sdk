@@ -24,6 +24,9 @@ ENV GRADLE_HOME=/opt/gradle
 
 RUN yes | /opt/android/cmdline-tools/latest/bin/sdkmanager --install \
 'emulator' \
-'platform-tools'
+'platform-tools' \
+'cmdline-tools;latest'
+
+RUN rm -rf /opt/android/cmdline-tools/latest && mv /opt/android/cmdline-tools/latest-2 /opt/android/cmdline-tools/latest
 
 ENV PATH="${PATH}:${GRADLE_HOME}/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/emulator"
