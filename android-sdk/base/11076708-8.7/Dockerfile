@@ -2,7 +2,7 @@ FROM debian:12.5-slim
 
 RUN apt update && \
 apt full-upgrade -y && \
-apt install -y openjdk-17-jdk curl tar zip unzip zstd
+apt install --no-install-recommends -y openjdk-17-jdk curl tar zip unzip zstd gpg
 
 RUN mkdir -p /opt/android && \
 curl 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip' -o /tmp/commandlinetools.zip && \
