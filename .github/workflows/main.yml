@@ -20,13 +20,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: anandbose16
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: anandbosedev
+          password: ${{ secrets.QUAY_TOKEN }}
       - name: Build base image
         run: |
           docker build \
@@ -34,12 +39,15 @@ jobs:
           -t anandbose16/android-sdk:base-latest \
           -t ghcr.io/${{ github.actor }}/android-sdk:base-${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }} \
           -t ghcr.io/${{ github.actor }}/android-sdk:base-latest \
+          -t quay.io/anandbosedev/android-sdk:base-${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }} \
+          -t quay.io/anandbosedev/android-sdk:base-latest \
           -f ./android-sdk/base/${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }}/Dockerfile \
           ./android-sdk/base/${{ env.CMDLINE_VERSION }}-${{ env.GRADLE_VERSION }}/
       - name: Push base image
         run: |
           docker push anandbose16/android-sdk --all-tags
           docker push ghcr.io/${{ github.actor }}/android-sdk --all-tags
+          docker push quay.io/anandbosedev/android-sdk --all-tags
   build-images:
     runs-on: ubuntu-latest
     name: Build Android SDK images
@@ -81,13 +89,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: anandbose16
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: anandbosedev
+          password: ${{ secrets.QUAY_TOKEN }}
       - name: Build Android SDK image ${{ matrix.build-tools-version }}
         run: |
           docker build \
@@ -95,6 +108,8 @@ jobs:
           -t anandbose16/android-sdk:${{ matrix.platform-version }} \
           -t ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
           -t ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.platform-version }} \
+          -t quay.io/anandbosedev/android-sdk:${{ matrix.build-tools-version }} \
+          -t quay.io/anandbosedev/android-sdk:${{ matrix.platform-version }} \
           -f ./android-sdk/${{ matrix.build-tools-version }}/Dockerfile \
           ./android-sdk/${{ matrix.build-tools-version }}/
       - name: Tag latest
@@ -105,8 +120,11 @@ jobs:
           anandbose16/android-sdk:latest
           docker tag \
           ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
-          ghcr.io/${{ github.actor }}/android-sdk:latest
+          ghcr.io/${{ github.actor }}/android-sdk:latest \
+          quay.io/anandbosedev/android-sdk:${{ matrix.build-tools-version }} \
+          quay.io/anandbosedev/android-sdk:latest
       - name: Push images
         run: |
           docker push anandbose16/android-sdk --all-tags
           docker push ghcr.io/${{ github.actor }}/android-sdk --all-tags
+          docker push quay.io/anandbosedev/android-sdk --all-tags
