@@ -117,7 +117,7 @@ jobs:
         run: |
           docker tag \
           anandbose16/android-sdk:${{ matrix.build-tools-version }} \
-          anandbose16/android-sdk:latest \
+          anandbose16/android-sdk:latest
           docker tag \
           ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
           ghcr.io/${{ github.actor }}/android-sdk:latest
