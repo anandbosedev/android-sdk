@@ -2,17 +2,20 @@
 
 This repository provides images of Android SDK with Debian 12.5 base and set of pre-installed tools for setting up CI/CD for Android projects. The container images are hosted for public availability in the following registries:
 
-* Docker Hub [hub.docker.com/r/anandbose16/android-sdk](https://hub.docker.com/r/anandbose16/android-sdk)
-* GitHub Container Registry [ghcr.io/anandbosedev/android-sdk](https://github.com/anandbosedev/android-sdk/pkgs/container/android-sdk)
+| Registry | Link |
+| --- | --- |
+| Docker Hub | [docker.io/anandbose16/android-sdk](https://hub.docker.com/r/anandbose16/android-sdk)|
+| GitHub Container Registry | [ghcr.io/anandbosedev/android-sdk](https://github.com/anandbosedev/android-sdk/pkgs/container/android-sdk)|
+| Quay by RedHat | [quay.io/anandbosedev/android-sdk](https://quay.io/repository/anandbosedev/android-sdk?tab=tags)|
 
 ## Base image configuration
 
 Every SDK image is generated with a base image [android-sdk:base-latest](./android-sdk/base/11076708-8.6/Dockerfile). The base image contains the following components, which are common for all derived SDK images. If you need a different configuration than the provided pre-configured container images, you can use this image as the entry point.
 
 | Component | Version |
-| ---- | ---- |
+| --- | --- |
 | OpenJDK | 17 |
-| Gradle | 8.6 |
+| Gradle | 8.7 |
 | Android SDK Command line tools | 11076708 |
 | emulator | latest |
 | platform-tools | latest |

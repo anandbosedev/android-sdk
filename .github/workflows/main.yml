@@ -117,11 +117,11 @@ jobs:
         run: |
           docker tag \
           anandbose16/android-sdk:${{ matrix.build-tools-version }} \
-          anandbose16/android-sdk:latest
+          anandbose16/android-sdk:latest \
           docker tag \
           ghcr.io/${{ github.actor }}/android-sdk:${{ matrix.build-tools-version }} \
-          ghcr.io/${{ github.actor }}/android-sdk:latest \
-          quay.io/anandbosedev/android-sdk:${{ matrix.build-tools-version }} \
+          ghcr.io/${{ github.actor }}/android-sdk:latest
+          docker tag quay.io/anandbosedev/android-sdk:${{ matrix.build-tools-version }} \
           quay.io/anandbosedev/android-sdk:latest
       - name: Push images
         run: |
